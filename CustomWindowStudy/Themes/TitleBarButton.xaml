@@ -3,6 +3,16 @@
                     xmlns:ctrl="clr-namespace:CustomWindowStudy.Controls">
 
     <Style x:Key="{x:Type ctrl:TitleBarButton}" TargetType="{x:Type ctrl:TitleBarButton}">
-        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctrl:TitleBarButton}">
+                    <Grid>
+                        <Border Background="{DynamicResource GrayColorStep170}" CornerRadius="4" Padding="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>
