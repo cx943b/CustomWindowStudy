@@ -14,11 +14,52 @@ using System.Windows.Shapes;
 
 namespace CustomWindowStudy
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    public enum DWMWINDOWATTRIBUTE : uint
+    {
+        DWMWA_NCRENDERING_ENABLED,
+        DWMWA_NCRENDERING_POLICY,
+        DWMWA_TRANSITIONS_FORCEDISABLED,
+        DWMWA_ALLOW_NCPAINT,
+        DWMWA_CAPTION_BUTTON_BOUNDS,
+        DWMWA_NONCLIENT_RTL_LAYOUT,
+        DWMWA_FORCE_ICONIC_REPRESENTATION,
+        DWMWA_FLIP3D_POLICY,
+        DWMWA_EXTENDED_FRAME_BOUNDS,
+        DWMWA_HAS_ICONIC_BITMAP,
+        DWMWA_DISALLOW_PEEK,
+        DWMWA_EXCLUDED_FROM_PEEK,
+        DWMWA_CLOAK,
+        DWMWA_CLOAKED,
+        DWMWA_FREEZE_REPRESENTATION,
+        DWMWA_PASSIVE_UPDATE_MODE,
+        DWMWA_USE_HOSTBACKDROPBRUSH,
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20,
+        DWMWA_WINDOW_CORNER_PREFERENCE = 33,
+        DWMWA_BORDER_COLOR,
+        DWMWA_CAPTION_COLOR,
+        DWMWA_TEXT_COLOR,
+        DWMWA_VISIBLE_FRAME_BORDER_THICKNESS,
+        DWMWA_SYSTEMBACKDROP_TYPE,
+        DWMWA_MICA_EFFECT = 1029,
+        DWMWA_LAST
+
+    }
+
+
+    // 모서리 선호도 열거형
+    public enum DWM_WINDOW_CORNER_PREFERENCE
+    {
+        DWMWCP_DEFAULT = 0,
+        DWMWCP_DONOTROUND = 1,  // 둥근 모서리 비활성화!
+        DWMWCP_ROUND = 2,
+        DWMWCP_ROUNDSMALL = 3
+    }
+
+    
     public partial class MainWindow : Window
     {
+        [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+        internal static extern void DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute, uint cbAttribute);
         private const int WM_NCCALCSIZE = 0x0083;
 
         public MainWindow()
@@ -31,6 +72,11 @@ namespace CustomWindowStudy
             base.OnSourceInitialized(e);
 
             var wndHandle = new WindowInteropHelper(this).EnsureHandle();
+            var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
+            var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND;
+            DwmSetWindowAttribute(wndHandle, attribute, ref preference, sizeof(uint));
+            DwmSetWindowAttribute(wndHandle, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, ref preference, sizeof(uint));
+
             var hwndSrc = HwndSource.FromHwnd(wndHandle);
             if (hwndSrc != null)
             {
@@ -51,43 +97,6 @@ namespace CustomWindowStudy
 
                         var scrPos = new Point(lParam.ToInt32() & 0xFFFF, lParam.ToInt32() >> 16);
                         var mousePos = PointFromScreen(scrPos);
-
-                        // like TitleBar
-                        if (btnMax != null)
-                        {
-                            Point posButton = btnMax.TranslatePoint(new Point(0, 0), this);
-                            Rect rectButton = new Rect(posButton, new Size(btnMax.ActualWidth, btnMax.ActualHeight));
-
-                            if(rectButton.Contains(mousePos))
-                            {
-                                btnMax.Background = Brushes.LightBlue;
-                                Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] MouseOver: btnTest(MaxButton)");
-
-                                return (IntPtr)HitTestValues.HTMAXBUTTON;
-                            }
-                            else
-                            {
-                                btnMax.Background = Brushes.Red;
-                            }
-                        }
-                        if (btnClose != null)
-                        {
-                            Point posButton = btnClose.TranslatePoint(new Point(0, 0), this);
-                            Rect rectButton = new Rect(posButton, new Size(btnClose.ActualWidth, btnClose.ActualHeight));
-
-                            if (rectButton.Contains(mousePos))
-                            {
-                                btnClose.Background = Brushes.LightBlue;
-                                Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] MouseOver: btnTest(MaxButton)");
-
-                                return (IntPtr)HitTestValues.HTCLOSE;
-                            }
-                            else
-                            {
-                                btnClose.Background = Brushes.Red;
-                            }
-                        }
-                        // like TitleBar
 
                         Size clientSize = new Size(300, 100);
                         Rect clientRect = new Rect(new Point((Width - clientSize.Width) / 2, (Height - clientSize.Height) / 2), clientSize);

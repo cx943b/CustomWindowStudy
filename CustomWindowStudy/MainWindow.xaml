@@ -5,22 +5,18 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CustomWindowStudy"
-        Left="1100" Top="300"
+        xmlns:localCtrl="clr-namespace:CustomWindowStudy.Controls"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
-        Title="MainWindow" Height="320" Width="480" Background="Gray">
-    <Window.Resources>
-        <Color x:Key="GrayColorStep170">#FFAA</Color>
-    </Window.Resources>
-    
+        Title="MainWindow" Height="320" Width="480">
+
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0"/>
+        <shell:WindowChrome GlassFrameThickness="1" />
     </shell:WindowChrome.WindowChrome>
-    
-    <Grid Visibility="Visible">
-        <Rectangle Fill="#FFAAAAAA" WindowChrome.IsHitTestVisibleInChrome="True"/>
-        <Button x:Name="btnMax" Content="btnMax" Width="100" Height="64" Margin="0 0 100 0" HorizontalAlignment="Right" VerticalAlignment="Top" Click="Button_Click"/>
-        <Button x:Name="btnClose" Content="btnClose" Width="100" Height="64" HorizontalAlignment="Right" VerticalAlignment="Top" Click="Button_Click"/>
-        <!--<local:TextRegionTestControl Width="300" Height="100"/>-->
-    </Grid>
+
+    <Border BorderThickness="1" BorderBrush="{StaticResource ControlBorderBrush}">
+        <DockPanel Background="#FFAAAAAA">
+            <localCtrl:WindowTitleBar />
+        </DockPanel>
+    </Border>
 </Window>

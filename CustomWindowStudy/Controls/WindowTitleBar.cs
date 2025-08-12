@@ -8,11 +8,11 @@ using System.Windows.Controls;
 
 namespace CustomWindowStudy.Controls
 {
-    public class TitleBarButton : Button
+    public class WindowTitleBar : ContentControl
     {
-        static TitleBarButton()
+        static WindowTitleBar()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TitleBarButton), new FrameworkPropertyMetadata(typeof(TitleBarButton)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowTitleBar), new FrameworkPropertyMetadata(typeof(WindowTitleBar)));
         }
     }
 }
