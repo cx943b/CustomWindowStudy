@@ -8,17 +8,36 @@
 
     <Style TargetType="{x:Type localCtrl:WindowTitleBar}">
         <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Height" Value="28"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type localCtrl:WindowTitleBar}">
-                    <DockPanel LastChildFill="True">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="36"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="42"/>
+                            <ColumnDefinition Width="42"/>
+                            <ColumnDefinition Width="42"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Rectangle Fill="CornflowerBlue" Grid.Column="0" Width="36"/>
+                        <Rectangle Fill="HotPink" Grid.Column="1" />
+                        <localCtrl:WindowTitleBarButton Grid.Column="2" Width="42" Content="x" ButtonFlag="Close"/>
+                        <localCtrl:WindowTitleBarButton Grid.Column="3" Width="42" Content="x" ButtonFlag="Maximize"/>
+                        <localCtrl:WindowTitleBarButton Grid.Column="4" Width="42" Content="x" ButtonFlag="Minimize"/>
+
+                        
+                        
+                    </Grid>
+                    <!--<DockPanel LastChildFill="True">
                         <localCtrl:WindowTitleBarButton DockPanel.Dock="Right" Width="42" Content="x" ButtonFlag="Close"/>
                         <localCtrl:WindowTitleBarButton DockPanel.Dock="Right" Width="42" Content="x" ButtonFlag="Maximize"/>
                         <localCtrl:WindowTitleBarButton DockPanel.Dock="Right" Width="42" Content="x" ButtonFlag="Minimize"/>
                         
                         <Rectangle Fill="CornflowerBlue" DockPanel.Dock="Left" Width="36"/>
                         <Rectangle Fill="HotPink"/>
-                    </DockPanel>
+                    </DockPanel>-->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

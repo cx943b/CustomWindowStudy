@@ -12,15 +12,15 @@
 
     <shell:WindowChrome.WindowChrome>
         <WindowChrome 
-            GlassFrameThickness="0"
-            ResizeBorderThickness="0"
-            UseAeroCaptionButtons="False"
+            CaptionHeight="00"
+            GlassFrameThickness="1"
+            ResizeBorderThickness="8 0 8 8"
             CornerRadius="0"/>
     </shell:WindowChrome.WindowChrome>
 
-    <Border BorderBrush="{StaticResource ControlBorderBrush}">
-        <DockPanel Background="white">
-            <localCtrl:WindowTitleBar DockPanel.Dock="Top"/>
+    <Border BorderThickness="0" BorderBrush="{StaticResource ControlBorderBrush}">
+        <DockPanel Background="White">
+            <localCtrl:WindowTitleBar x:Name="titleBar" DockPanel.Dock="Top"/>
 
             <Canvas>
                 <Border Background="Red" Width="200" Height="1" Canvas.Left="50" Canvas.Top="50">
