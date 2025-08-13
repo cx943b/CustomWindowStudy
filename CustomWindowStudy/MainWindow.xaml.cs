@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using CustomWindowStudy.Controls;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -58,9 +59,25 @@ namespace CustomWindowStudy
     
     public partial class MainWindow : Window
     {
+        //[DllImport("dwmapi.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+        //internal static extern void DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute, uint cbAttribute);
+
         [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
-        internal static extern void DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute, uint cbAttribute);
+        internal static extern void DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, ref uint color, uint cbAttribute);
+
+        private const int GWL_STYLE = -16;
+        private const int WS_SYSMENU = 0x80000; // 시스템 메뉴 (타이틀바 포함)
+        private const int WS_CAPTION = 0xC00000; // 캡션 바
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
         private const int WM_NCCALCSIZE = 0x0083;
+
+        private WindowGlowBar _leftGlow, _rightGlow, _topGlow, _bottomGlow;
 
         public MainWindow()
         {
@@ -72,10 +89,17 @@ namespace CustomWindowStudy
             base.OnSourceInitialized(e);
 
             var wndHandle = new WindowInteropHelper(this).EnsureHandle();
-            var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
-            var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND;
-            DwmSetWindowAttribute(wndHandle, attribute, ref preference, sizeof(uint));
-            DwmSetWindowAttribute(wndHandle, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, ref preference, sizeof(uint));
+            uint preference = (uint)DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND;
+            uint dwmBorderColor = 0xFF0000;
+            uint bAllowNcPaint = 1;
+
+            DwmSetWindowAttribute(wndHandle, DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, ref preference, sizeof(uint));
+            DwmSetWindowAttribute(wndHandle, DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, ref dwmBorderColor, sizeof(uint));
+            DwmSetWindowAttribute(wndHandle, DWMWINDOWATTRIBUTE.DWMWA_ALLOW_NCPAINT, ref bAllowNcPaint, sizeof(uint));
+
+            int style = GetWindowLong(wndHandle, GWL_STYLE);
+            style &= ~(WS_CAPTION | WS_SYSMENU); // 타이틀바와 시스템 메뉴 제거
+            SetWindowLong(wndHandle, GWL_STYLE, style);
 
             var hwndSrc = HwndSource.FromHwnd(wndHandle);
             if (hwndSrc != null)
@@ -83,6 +107,56 @@ namespace CustomWindowStudy
                 hwndSrc.AddHook(new HwndSourceHook(wndSrcHook));
             }
 
+            // Create and show glow bars
+            _leftGlow = new WindowGlowBar { Owner = this, Position = WindowGlowBarPosition.Left };
+            _rightGlow = new WindowGlowBar { Owner = this, Position = WindowGlowBarPosition.Right };
+            _topGlow = new WindowGlowBar { Owner = this, Position = WindowGlowBarPosition.Top };
+            _bottomGlow = new WindowGlowBar { Owner = this, Position = WindowGlowBarPosition.Bottom };
+
+            _leftGlow.Show();
+            _rightGlow.Show();
+            _topGlow.Show();
+            _bottomGlow.Show();
+
+            // Add event handlers
+            this.LocationChanged += OnLocationOrSizeChanged;
+            this.SizeChanged += OnLocationOrSizeChanged;
+        
+            // Initial position update
+            UpdateGlowBarsPosition();
+        }
+
+        private void OnLocationOrSizeChanged(object? sender, EventArgs e)
+        {
+            UpdateGlowBarsPosition();
+        }
+
+        private void UpdateGlowBarsPosition()
+        {
+            if (_leftGlow == null || _rightGlow == null || _topGlow == null || _bottomGlow == null)
+                return;
+
+            const double glowSize = 20; // Define glow size as a constant
+
+            _leftGlow.Left = this.Left - glowSize;
+            _leftGlow.Top = this.Top;
+            _leftGlow.Width = glowSize;
+            _leftGlow.Height = this.Height;
+
+            _rightGlow.Left = this.Left + this.Width;
+            _rightGlow.Top = this.Top;
+            _rightGlow.Width = glowSize;
+            _rightGlow.Height = this.Height;
+
+            _topGlow.Left = this.Left;
+            _topGlow.Top = this.Top - glowSize;
+            _topGlow.Width = this.Width;
+            _topGlow.Height = glowSize;
+
+            _bottomGlow.Left = this.Left;
+            _bottomGlow.Top = this.Top + this.Height;
+            _bottomGlow.Width = this.Width;
+            _bottomGlow.Height = glowSize;
         }
 
         private IntPtr wndSrcHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -91,33 +165,34 @@ namespace CustomWindowStudy
             // For example, you can handle WM_NCHITTEST to customize window dragging behavior
             switch (msg)
             {
-                case 0x0084: // WM_NCHITTEST
-                    {
-                        handled = true;
+                //case 0x0084: // WM_NCHITTEST
+                //    {
+                //        //handled = true;
 
-                        var scrPos = new Point(lParam.ToInt32() & 0xFFFF, lParam.ToInt32() >> 16);
-                        var mousePos = PointFromScreen(scrPos);
+                //        var scrPos = new Point(lParam.ToInt32() & 0xFFFF, lParam.ToInt32() >> 16);
+                //        var mousePos = PointFromScreen(scrPos);
 
-                        Size clientSize = new Size(300, 100);
-                        Rect clientRect = new Rect(new Point((Width - clientSize.Width) / 2, (Height - clientSize.Height) / 2), clientSize);
+                //        Size clientSize = new Size(300, 100);
+                //        Rect clientRect = new Rect(new Point((Width - clientSize.Width) / 2, (Height - clientSize.Height) / 2), clientSize);
 
-                        if (clientRect.Contains(mousePos))
-                        {
-                            Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] WM_NCHITTEST: HTCLIENT");
-                            return (IntPtr)HitTestValues.HTCLIENT; // 버튼 영역
-                        }
+                //        if (clientRect.Contains(mousePos))
+                //        {
+                //            Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] WM_NCHITTEST: HTCLIENT");
+                //            return (IntPtr)HitTestValues.HTBOTTOM; // 버튼 영역
+                //        }
 
-                        Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] WM_NCHITTEST: HTNOWHERE");
-                        return (IntPtr)HitTestValues.HTNOWHERE;
-                    }
+                //        Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] WM_NCHITTEST: HTNOWHERE");
+                //        return (IntPtr)HitTestValues.HTNOWHERE;
+                //    }
                     // WM_NCLBUTTONDOWN
-                    case 0x00A1: // WM_NCLBUTTONDOWN
-                    {
-                        Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] WM_NCLBUTTONDOWN");
-                        handled = true;
-                        return IntPtr.Zero; // 기본 동작을 수행하지 않음
-                    }
+                    //case 0x00A1: // WM_NCLBUTTONDOWN
+                    //{
+                    //    Debug.WriteLine($"[{DateTime.Now.ToLongTimeString()}] WM_NCLBUTTONDOWN");
+                    //    handled = true;
+                    //    return IntPtr.Zero; // 기본 동작을 수행하지 않음
+                    //}
             }
+
             return IntPtr.Zero;
         }
 
