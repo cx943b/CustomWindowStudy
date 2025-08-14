@@ -7,70 +7,6 @@ using System.Threading.Tasks;
 
 namespace CustomWindowStudy
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct POINT
-    {
-        public int X;
-        public int Y;
-        public POINT(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RECT
-    {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct NCCALCSIZE_PARAMS
-    {
-        public RECT rgrc0;
-        public RECT rgrc1;
-        public RECT rgrc2;
-        public IntPtr lppos;
-    }
-
-    public enum HitTestValues
-    {
-        HTERROR = -2,       // 오류 발생 (예: 다른 윈도우로 메시지 전송 시)
-        HTTRANSPARENT = -1, // 투명한 영역 (마우스 이벤트가 아래 윈도우로 전달)
-        HTNOWHERE = 0,      // 윈도우 영역이지만 아무것도 아님
-        HTCLIENT = 1,       // 클라이언트 영역
-        HTCAPTION = 2,      // 타이틀 바
-        HTSYSMENU = 3,      // 시스템 메뉴
-        HTGROWBOX = 4,      // 크기 조정 상자 (HTSIZE와 동일)
-        HTMENU = 5,         // 메뉴
-        HTHSCROLL = 6,      // 가로 스크롤 바
-        HTVSCROLL = 7,      // 세로 스크롤 바
-        HTMINBUTTON = 8,    // 최소화 버튼
-        HTMAXBUTTON = 9,    // 최대화 버튼
-        HTLEFT = 10,        // 왼쪽 테두리
-        HTRIGHT = 11,       // 오른쪽 테두리
-        HTTOP = 12,         // 위쪽 테두리
-        HTTOPLEFT = 13,     // 왼쪽 위 모서리
-        HTTOPRIGHT = 14,    // 오른쪽 위 모서리
-        HTBOTTOM = 15,      // 아래쪽 테두리
-        HTBOTTOMLEFT = 16,  // 왼쪽 아래 모서리
-        HTBOTTOMRIGHT = 17, // 오른쪽 아래 모서리
-        HTBORDER = 18,      // 테두리 (크기 조정 불가)
-        HTOBJECT = 19,      // 개체 (예: OLE 개체)
-        HTCLOSE = 20,       // 닫기 버튼
-        HTHELP = 21         // 도움말 버튼
-    }
-
-    public enum DWMNCRENDERINGPOLICY
-    {
-        DWMNCRP_USEWINDOWSTYLE = 0, // 윈도우 스타일 사용
-        DWMNCRP_DISABLED = 1,       // 비활성화
-        DWMNCRP_ENABLED = 2,        // 활성화
-        DWMNCRP_LAST = 3             // 마지막 값
-    }
     public enum DWM_WINDOW_CORNER_PREFERENCE
     {
         DWMWCP_DEFAULT = 0,
@@ -184,19 +120,6 @@ namespace CustomWindowStudy
         WM_NCACTIVATE = 0x0086,
         WM_GETDLGCODE = 0x0087,
         WM_SYNCPAINT = 0x0088,
-        WM_NCMOUSEMOVE = 0x00A0,
-        WM_NCLBUTTONDOWN = 0x00A1,
-        WM_NCLBUTTONUP = 0x00A2,
-        WM_NCLBUTTONDBLCLK = 0x00A3,
-        WM_NCRBUTTONDOWN = 0x00A4,
-        WM_NCRBUTTONUP = 0x00A5,
-        WM_NCRBUTTONDBLCLK = 0x00A6,
-        WM_NCMBUTTONDOWN = 0x00A7,
-        WM_NCMBUTTONUP = 0x00A8,
-        WM_NCMBUTTONDBLCLK = 0x00A9,
-        WM_NCXBUTTONDOWN = 0x00AB,
-        WM_NCXBUTTONUP = 0x00AC,
-        WM_NCXBUTTONDBLCLK = 0x00AD,
         WM_MOUSEMOVE = 0x0200,
         WM_LBUTTONDOWN = 0x0201,
         WM_LBUTTONUP = 0x0202,
@@ -242,7 +165,6 @@ namespace CustomWindowStudy
         WM_CTLCOLORDLG = 0x0136,
         WM_CTLCOLORSCROLLBAR = 0x0137,
         WM_CTLCOLORSTATIC = 0x0138,
-        WM_NCMOUSELEAVE = 0x02A2,
         WM_MOUSELEAVE = 0x02A3,
         WM_PRINT = 0x0317,
         WM_PRINTCLIENT = 0x0318,
@@ -259,17 +181,12 @@ namespace CustomWindowStudy
 
     internal class NativeMethods
     {
-        [DllImport("dwmapi.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true, PreserveSig = false)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, in uint color, uint cbAttribute);
-
-        [DllImport("dwmapi.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true, PreserveSig = false)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE dwAttribute, in DWMNCRENDERINGPOLICY pvAttribute, uint cbAttribute);
-
-
-        [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true)]
+        [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+        public static extern void DwmSetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, ref uint color, uint cbAttribute);
+        [DllImport("user32.dll")]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true)]
+        [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
 
