@@ -8,4 +8,15 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controls\WindowTitleBar-DevCom.cs" />
+    <Compile Remove="MainWindow.xaml-DevCom.cs" />
+    <Compile Remove="NativeMethods-DevCom.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="MainWindow-DevCom.xaml" />
+    <Page Remove="Themes\WindowTitleBar-DevCom.xaml" />
+  </ItemGroup>
+
 </Project>

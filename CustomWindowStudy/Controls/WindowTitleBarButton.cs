@@ -8,17 +8,17 @@ using System.Windows.Controls;
 
 namespace CustomWindowStudy.Controls
 {
-    public class WindowTitleBarButton : Button
+    public class WindowTitleBarButton : Button, IHitTestElement
     {
         static WindowTitleBarButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowTitleBarButton), new FrameworkPropertyMetadata(typeof(WindowTitleBarButton)));
         }
 
-        public WindowTitleBarButtonFlag ButtonFlag
+        public HitTestValues ReservedHitTest
         {
-            get { return (WindowTitleBarButtonFlag)GetValue(ButtonFlagProperty); }
-            set { SetValue(ButtonFlagProperty, value); }
+            get { return (HitTestValues)GetValue(ReservedHitTestProperty); }
+            set { SetValue(ReservedHitTestProperty, value); }
         }
         public bool IsMouseOverByHitTest
         {
@@ -31,8 +31,8 @@ namespace CustomWindowStudy.Controls
             set { SetValue(IsPressedByHitTestProperty, value); }
         }
 
-        public static readonly DependencyProperty ButtonFlagProperty
-            = DependencyProperty.Register("ButtonFlag", typeof(WindowTitleBarButtonFlag), typeof(WindowTitleBarButton), new UIPropertyMetadata(WindowTitleBarButtonFlag.None));
+        public static readonly DependencyProperty ReservedHitTestProperty
+            = DependencyProperty.Register("ReservedHitTest", typeof(HitTestValues), typeof(WindowTitleBarButton), new UIPropertyMetadata(HitTestValues.HTNOWHERE));
         public static readonly DependencyProperty IsMouseOverByHitTestProperty = DependencyProperty.Register("IsMouseOverByHitTest", typeof(bool), typeof(WindowTitleBarButton), new UIPropertyMetadata(false));
         public static readonly DependencyProperty IsPressedByHitTestProperty = DependencyProperty.Register("IsPressedByHitTest", typeof(bool), typeof(WindowTitleBarButton), new UIPropertyMetadata(false));
 

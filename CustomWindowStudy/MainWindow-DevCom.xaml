@@ -7,14 +7,15 @@
         xmlns:local="clr-namespace:CustomWindowStudy"
         xmlns:localCtrl="clr-namespace:CustomWindowStudy.Controls"
         WindowStartupLocation="CenterScreen"
-        mc:Ignorable="d" Background="HotPink"
-        Title="MainWindow" Height="320" Width="480" WindowStyle="SingleBorderWindow">
+        mc:Ignorable="d" Background="HotPink" 
+        Title="MainWindow" Height="320" Width="480">
 
     <shell:WindowChrome.WindowChrome>
         <WindowChrome 
-            CaptionHeight="0"
-            GlassFrameThickness="-1"
-            ResizeBorderThickness="8"/>
+            CaptionHeight="00"
+            GlassFrameThickness="1"
+            ResizeBorderThickness="8 0 8 8"
+            CornerRadius="0"/>
     </shell:WindowChrome.WindowChrome>
 
     <Border BorderThickness="0" BorderBrush="{StaticResource ControlBorderBrush}">
